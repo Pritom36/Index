@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .form-group button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group input[type="file"] {
+            padding: 3px;
+        }
+        .form-group select {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Control Panel</h2>
+        <div class="form-group">
+            <label for="product-id">Product ID</label>
+            <input type="text" id="product-id" placeholder="Enter product ID">
+        </div>
+        <div class="form-group">
+            <label for="product-name">Product Name</label>
+            <input type="text" id="product-name" placeholder="Enter product name">
+        </div>
+        <div class="form-group">
+            <label for="product-price">Product Price</label>
+            <input type="text" id="product-price" placeholder="Enter product price">
+        </div>
+        <div class="form-group">
+            <label for="product-category">Product Category</label>
+            <select id="product-category">
+                <option value="category1">Category 1</option>
+                <option value="category2">Category 2</option>
+                <option value="category3">Category 3</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="product-description">Product Description</label>
+            <textarea id="product-description" placeholder="Enter product description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="product-availability">Product Availability</label>
+            <select id="product-availability">
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="product-image">Product Image</label>
+            <input type="file" id="product-image">
+        </div>
+        <div class="form-group">
+            <label for="product-url">Product Details URL</label>
+            <input type="text" id="product-url" placeholder="Enter product details URL">
+        </div>
+        <div class="form-group">
+            <button id="add-product-btn">Add Product</button>
+        </div>
+        <div class="form-group">
+            <label for="remove-product-id">Remove Product by ID</label>
+            <input type="text" id="remove-product-id" placeholder="Enter product ID to remove">
+            <button id="remove-product-btn">Remove Product</button>
+        </div>
+        <div class="form-group">
+            <label for="update-availability-id">Update Availability by ID</label>
+            <input type="text" id="update-availability-id" placeholder="Enter product ID to update">
+            <select id="update-availability-status">
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+            </select>
+            <button id="update-availability-btn">Update Availability</button>
+        </div>
+        <div class="form-group">
+            <label for="category-name">Category Name</label>
+            <input type="text" id="category-name" placeholder="Enter new category name">
+            <button id="add-category-btn">Add Category</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('add-product-btn').addEventListener('click', function() {
+            let id = document.getElementById('product-id').value;
+            let name = document.getElementById('product-name').value;
+            let price = document.getElementById('product-price').value;
+            let category = document.getElementById('product-category').value;
+            let description = document.getElementById('product-description').value;
+            let availability = document.getElementById('product-availability').value;
+            let imageUrl = document.getElementById('product-image').files[0];
+            let detailsUrl = document.getElementById('product-url').value;
+
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                let productCard = document.createElement('div');
+                productCard.classList.add('product');
+                productCard.setAttribute('data-id', id);
+                productCard.setAttribute('data-name', name);
+                productCard.setAttribute('data-price', price);
+                productCard.setAttribute('data-category', category);
+                productCard.setAttribute('data-availability', availability);
+
+                productCard.innerHTML = `
+                    <img src="${event.target.result}" alt="${name}">
+                    <div class="product-info">
+                        <div class="product-id">ID: ${id}</div>
+                        <div class="product-name">${name}</div>
+                        <div class="product-price">৳${price}</div>
+                        <div class="product-category">${category}</div>
+                        <div class="product-availability">Availability: ${availability}</div>
+                        <div class="product-description">${description}</div>
+                        <button onclick="window.location.href='${detailsUrl}'">Details</button>
+                        <button class="delete-btn">X</button>
+                    </div>
+                `;
+
+                localStorage.setItem(`product_${id}`, productCard.outerHTML);
+                alert('Product added successfully!');
+                document.getElementById('product-id').value = '';
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-price').value = '';
+                document.getElementById('product-category').value = 'category1';
+                document.getElementById('product-description').value = '';
+                document.getElementById('product-availability').value = 'available';
+                document.getElementById('product-image').value = '';
+                document.getElementById('product-url').value = '';
+            };
+
+            reader.readAsDataURL(imageUrl);
+        });
+
+        document.getElementById('remove-product-btn').addEventListener('click', function() {
+            let productId = document.getElementById('remove-product-id').value;
+            localStorage.removeItem(`product_${productId}`);
+            alert('Product removed successfully!');
+            window.location.reload();
+        });
+
+        document.getElementById('update-availability-btn').addEventListener('click', function() {
+            let productId = document.getElementById('update-availability-id').value;
+            let availabilityStatus = document.getElementById('update-availability-status').value;
+
+            let productHtml = localStorage.getItem(`product_${productId}`);
+            if (productHtml) {
+                let parser = new DOMParser();
+                let productDoc = parser.parseFromString(productHtml, 'text/html');
+                let productCard = productDoc.querySelector('.product');
+                productCard.setAttribute('data-availability', availabilityStatus);
+                productCard.querySelector('.product-availability').textContent = `Availability: ${availabilityStatus}`;
+                localStorage.setItem(`product_${productId}`, productCard.outerHTML);
+                alert('Product availability updated successfully!');
+                window.location.reload();
+            } else {
+                alert('Product not found!');
+            }
+        });
+
+        document.getElementById('add-category-btn').addEventListener('click', function() {
+            let categoryName = document.getElementById('category-name').value;
+            if (categoryName) {
+                let option = document.createElement('option');
+                option.value = categoryName.toLowerCase().replace(/\s+/g, '');
+                option.textContent = categoryName;
+                document.getElementById('product-category').appendChild(option);
+                document.getElementById('category-name').value = '';
+            }
+        });
+    </script>
+</body>
+</html>
